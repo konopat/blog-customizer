@@ -8,11 +8,13 @@ import { defaultArticleState } from './constants/articleProps';
 
 import './styles/index.scss';
 import styles from './styles/index.module.scss';
+import { useSidebar } from './hooks/use-sidebar.hook';
 
 const domNode = document.getElementById('root') as HTMLDivElement;
 const root = createRoot(domNode);
 
 const App = () => {
+	const { isOpen, toggleSidebar, sidebarRef, toggleButtonRef } = useSidebar();
 	return (
 		<div
 			className={clsx(styles.main)}
@@ -25,7 +27,12 @@ const App = () => {
 					'--bg-color': defaultArticleState.backgroundColor.value,
 				} as CSSProperties
 			}>
-			<ArticleParamsForm />
+			<ArticleParamsForm
+				isOpen={isOpen}
+				toggleSidebar={toggleSidebar}
+				sidebarRef={sidebarRef}
+				toggleButtonRef={toggleButtonRef}
+			/>
 			<Article />
 		</div>
 	);
