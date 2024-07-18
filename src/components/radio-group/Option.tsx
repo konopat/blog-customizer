@@ -1,9 +1,10 @@
 import { useRef } from 'react';
-import { OptionType } from 'src/constants/articleProps';
+
 import { Text } from 'components/text';
 import { useEnterSubmit } from './hooks/useEnterSubmit';
 
 import styles from './RadioGroup.module.scss';
+import { OptionType } from 'src/types';
 
 type OptionProps = {
 	value: OptionType['value'];
