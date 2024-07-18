@@ -34,10 +34,10 @@ export const ArticleParamsForm: React.FC<SidebarProps> = ({
 		contentWidth: defaultStyleState.contentWidth,
 	};
 
-	// Состояние формы
+	// Текущее состояние формы
 	const [formState, setFormState] = useState<FormState>(initialFormState);
 
-	// Обработка отправки и сброса формы
+	// Единый обработчик отправки и сброса формы
 	const handleFormAction = (
 		evt: FormEvent<HTMLFormElement>,
 		resetForm: boolean
