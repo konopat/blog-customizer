@@ -1,8 +1,8 @@
+import { useState, FormEvent } from 'react';
 import { ArrowButton } from 'components/arrow-button';
 import { Button } from 'components/button';
-
 import styles from './ArticleParamsForm.module.scss';
-import { SidebarProps } from 'src/types';
+import { FormState, OptionType, SidebarProps } from 'src/types';
 import clsx from 'clsx';
 import { Select } from '../select';
 import { RadioGroup } from '../radio-group';
@@ -11,6 +11,7 @@ import { Text } from '../text';
 import {
 	backgroundColors,
 	contentWidthArr,
+	defaultArticleState,
 	fontColors,
 	fontFamilyOptions,
 	fontSizeOptions,
@@ -21,48 +22,104 @@ export const ArticleParamsForm: React.FC<SidebarProps> = ({
 	toggleSidebar,
 	sidebarRef,
 	toggleButtonRef,
+	defaultStyleState,
+	setStyleState,
 }) => {
+	// Исходное состояние формы
+	const initialFormState: FormState = {
+		fontFamily: defaultStyleState.fontFamilyOption,
+		fontSize: defaultStyleState.fontSizeOption,
+		fontColor: defaultStyleState.fontColor,
+		backgroundColor: defaultStyleState.backgroundColor,
+		contentWidth: defaultStyleState.contentWidth,
+	};
+
+	// Состояние формы
+	const [formState, setFormState] = useState<FormState>(initialFormState);
+
+	// Обработка отправки и сброса формы
+	const handleFormAction = (
+		evt: FormEvent<HTMLFormElement>,
+		resetForm: boolean
+	) => {
+		evt.preventDefault();
+		if (resetForm) {
+			// Сброс состояния формы и стилей
+			setFormState(initialFormState);
+			setStyleState(defaultArticleState);
+		} else {
+			// Применение выбранных стилей
+			setStyleState({
+				fontFamilyOption: formState.fontFamily,
+				fontColor: formState.fontColor,
+				backgroundColor: formState.backgroundColor,
+				contentWidth: formState.contentWidth,
+				fontSizeOption: formState.fontSize,
+			});
+		}
+	};
+
+	// Обновление состояния формы при изменении полей
+	const handleChange = (field: keyof FormState, value: OptionType) => {
+		setFormState((prevState) => ({
+			...prevState,
+			[field]: value,
+		}));
+	};
+
 	return (
 		<>
 			<ArrowButton
-				isOpen={isOpen} // // Передаем состояние сайдбара
-				toggleSidebar={toggleSidebar} // Передаем функцию для переключения состояния сайдбара
-				theRef={toggleButtonRef} // Передаем ссылку для изоляции кнопки из outside зоны
+				isOpen={isOpen}
+				toggleSidebar={toggleSidebar}
+				theRef={toggleButtonRef}
 			/>
 			<aside
-				ref={sidebarRef} // Передаем ссылку для определения сайдбара
-				// В зависимости от состояния сайдбара меняем стили
+				ref={sidebarRef}
 				className={clsx(styles.container, isOpen && styles.container_open)}>
-				<form className={styles.form}>
+				<form
+					className={styles.form}
+					onSubmit={(evt) => handleFormAction(evt, false)}
+					onReset={(evt) => handleFormAction(evt, true)}>
 					<Text as='h2' size={31} weight={800} uppercase>
 						Задайте параметры
 					</Text>
 					<Select
 						title='Шрифт'
-						selected={fontFamilyOptions[0]}
+						selected={formState.fontFamily}
 						options={fontFamilyOptions}
+						onChange={(value) => handleChange('fontFamily', value)}
 					/>
 					<RadioGroup
 						name={'font-size-field'}
 						options={fontSizeOptions}
-						selected={fontSizeOptions[0]}
+						selected={formState.fontSize}
 						title={'Размер шрифта'}
+						onChange={(value) =>
+							handleChange(
+								'fontSize',
+								fontSizeOptions.find((option) => option === value)!
+							)
+						}
 					/>
 					<Select
 						title='Цвет шрифта'
-						selected={fontColors[0]}
+						selected={formState.fontColor}
 						options={fontColors}
+						onChange={(value) => handleChange('fontColor', value)}
 					/>
 					<Separator />
 					<Select
 						title='Цвет фона'
-						selected={backgroundColors[0]}
+						selected={formState.backgroundColor}
 						options={backgroundColors}
+						onChange={(value) => handleChange('backgroundColor', value)}
 					/>
 					<Select
 						title='Ширина контента'
-						selected={contentWidthArr[0]}
+						selected={formState.contentWidth}
 						options={contentWidthArr}
+						onChange={(value) => handleChange('contentWidth', value)}
 					/>
 					<div className={styles.bottomContainer}>
 						<Button title='Сбросить' type='reset' />

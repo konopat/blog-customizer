@@ -1,5 +1,5 @@
 import { createRoot } from 'react-dom/client';
-import { StrictMode, CSSProperties } from 'react';
+import { StrictMode, CSSProperties, useState } from 'react';
 import clsx from 'clsx';
 
 import { Article } from './components/article/Article';
@@ -15,16 +15,17 @@ const root = createRoot(domNode);
 
 const App = () => {
 	const { isOpen, toggleSidebar, sidebarRef, toggleButtonRef } = useSidebar();
+	const [styleState, setStyleState] = useState(defaultArticleState);
 	return (
 		<div
 			className={clsx(styles.main)}
 			style={
 				{
-					'--font-family': defaultArticleState.fontFamilyOption.value,
-					'--font-size': defaultArticleState.fontSizeOption.value,
-					'--font-color': defaultArticleState.fontColor.value,
-					'--container-width': defaultArticleState.contentWidth.value,
-					'--bg-color': defaultArticleState.backgroundColor.value,
+					'--font-family': styleState.fontFamilyOption.value,
+					'--font-size': styleState.fontSizeOption.value,
+					'--font-color': styleState.fontColor.value,
+					'--container-width': styleState.contentWidth.value,
+					'--bg-color': styleState.backgroundColor.value,
 				} as CSSProperties
 			}>
 			<ArticleParamsForm
@@ -32,6 +33,8 @@ const App = () => {
 				toggleSidebar={toggleSidebar}
 				sidebarRef={sidebarRef}
 				toggleButtonRef={toggleButtonRef}
+				defaultStyleState={styleState}
+				setStyleState={setStyleState}
 			/>
 			<Article />
 		</div>
